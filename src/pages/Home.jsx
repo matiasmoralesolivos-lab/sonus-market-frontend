@@ -1,39 +1,55 @@
 
-import { useContext } from 'react'
-import { Link } from 'react-router-dom'
-import { GlobalContext } from '../context/GlobalContext'
-import Navbar from '../components/Navbar'
-import ProductCard from '../components/ProductCard'
-import './Home.css'
+import { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
+import Navbar from '../components/Navbar';
+import ProductCard from '../components/ProductCard';
+import './Home.css';
 
 const categorias = [
   {
     nombre: 'Audio profesional',
-    descripcion: 'Monitores y amplificación'
+    descripcion: 'Monitores y amplificación',
   },
   {
     nombre: 'Instrumentos',
-    descripcion: 'Guitarras, bajos y teclados'
+    descripcion: 'Guitarras, bajos y teclados',
   },
   {
     nombre: 'Accesorios',
-    descripcion: 'Cables, atriles y otros'
+    descripcion: 'Cables, atriles y otros',
   },
   {
     nombre: 'Otros',
-    descripcion: 'Productos variados'
-  }
-]
+    descripcion: 'Productos variados',
+  },
+];
 
 function Home() {
-  const { publicaciones } = useContext(GlobalContext)
+  const {
+    publicaciones,
+    cargarPublicaciones,
+    cargandoPublicaciones,
+  } = useContext(GlobalContext);
+
+  useEffect(() => {
+    cargarPublicaciones().catch((error) => {
+      console.error('Error al cargar publicaciones recientes:', error);
+    });
+  }, []);
+
+  const publicacionesRecientes = [...publicaciones]
+    .sort(
+      (a, b) =>
+        new Date(b.fecha_creacion) - new Date(a.fecha_creacion)
+    )
+    .slice(0, 3);
 
   return (
     <>
       <Navbar />
 
       <main className="container home-container">
-
         <section className="home-hero">
           <h1>Audio profesional y música</h1>
 
@@ -52,10 +68,7 @@ function Home() {
           <div className="row g-3">
             {categorias.map((categoria) => (
               <div className="col-6 col-lg-3" key={categoria.nombre}>
-                <Link
-                  to="/publicaciones"
-                  className="category-card"
-                >
+                <Link to="/publicaciones" className="category-card">
                   <h3>{categoria.nombre}</h3>
                   <p>{categoria.descripcion}</p>
                 </Link>
@@ -67,18 +80,27 @@ function Home() {
         <section className="home-products">
           <h2>Publicaciones recientes</h2>
 
-          <div className="row g-4">
-            {publicaciones.slice(0, 3).map((producto) => (
-              <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
-                <ProductCard producto={producto} />
-              </div>
-            ))}
-          </div>
-        </section>
+          {cargandoPublicaciones ? (
+            <p className="text-secondary">Cargando publicaciones...</p>
+          ) : (
+            <div className="row g-4">
+              {publicacionesRecientes.map((producto) => (
+                <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
+                  <ProductCard producto={producto} />
+                </div>
+              ))}
 
+              {publicacionesRecientes.length === 0 && (
+                <p className="text-secondary">
+                  Todavía no hay publicaciones disponibles.
+                </p>
+              )}
+            </div>
+          )}
+        </section>
       </main>
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;

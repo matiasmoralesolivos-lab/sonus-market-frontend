@@ -1,13 +1,25 @@
 
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { GlobalContext } from '../context/GlobalContext'
 import Navbar from '../components/Navbar'
 import ProductCard from '../components/ProductCard'
 
 function Galeria() {
-  const { publicaciones } = useContext(GlobalContext)
+  const {
+    publicaciones,
+    cargarPublicaciones,
+    cargandoPublicaciones
+  } = useContext(GlobalContext)
+
   const [categoria, setCategoria] = useState('Todas')
   const [busqueda, setBusqueda] = useState('')
+
+  // Cargar publicaciones desde PostgreSQL al entrar
+  useEffect(() => {
+    cargarPublicaciones().catch((error) => {
+      console.error('Error al cargar la galería:', error)
+    })
+  }, [])
 
   const publicacionesFiltradas = publicaciones.filter((producto) => {
     const coincideCategoria =
@@ -28,7 +40,6 @@ function Galeria() {
         <h1 className="h3 mb-4">Explorar publicaciones</h1>
 
         <div className="row g-4">
-          {/* Filtros */}
           <aside className="col-12 col-md-3">
             <div className="border rounded-3 p-3">
               <h2 className="h5 mb-3">Filtros</h2>
@@ -55,10 +66,11 @@ function Galeria() {
             </div>
           </aside>
 
-          {/* Productos */}
           <section className="col-12 col-md-9">
             <div className="row g-4">
-              {publicacionesFiltradas.length > 0 ? (
+              {cargandoPublicaciones ? (
+                <p className="text-secondary">Cargando publicaciones...</p>
+              ) : publicacionesFiltradas.length > 0 ? (
                 publicacionesFiltradas.map((producto) => (
                   <div className="col-12 col-sm-6 col-lg-4" key={producto.id}>
                     <ProductCard producto={producto} />

@@ -148,3 +148,42 @@ h1, h2, h3, h4, h5 {
   background: #ffffff;
   color: #101d2d;
 }
+
+/* Menú hamburguesa */
+.sonus-navbar .navbar-toggler {
+  border: 1px solid #718096;
+  padding: 6px 10px;
+}
+
+.sonus-navbar .navbar-toggler:focus {
+  box-shadow: none;
+}
+
+.sonus-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Menú desplegado en móviles */
+@media (max-width: 991.98px) {
+  .sonus-navbar .navbar-collapse.show {
+    display: block;
+    padding: 16px 0;
+  }
+
+  .sonus-navbar .navbar-nav {
+    align-items: stretch !important;
+    gap: 8px;
+  }
+
+  .sonus-navbar .nav-link {
+    padding: 10px 0;
+  }
+
+  .sonus-navbar .sonus-btn-primary,
+  .sonus-navbar .sonus-btn-outline {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    margin-top: 6px;
+  }
+}

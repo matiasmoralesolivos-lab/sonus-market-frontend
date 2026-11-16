@@ -26,7 +26,7 @@ function ProductCard({ producto }) {
         </h5>
 
         <p className="small text-secondary mb-1">
-          ${producto.precio.toLocaleString('es-CL')}
+          ${Number(producto.precio).toLocaleString('es-CL')}
         </p>
 
         <Link

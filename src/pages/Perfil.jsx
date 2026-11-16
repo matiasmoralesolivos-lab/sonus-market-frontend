@@ -1,22 +1,37 @@
 
-import { useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { GlobalContext } from '../context/GlobalContext'
-import Navbar from '../components/Navbar'
-import ProductCard from '../components/ProductCard'
+import { useContext, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
+import Navbar from '../components/Navbar';
+import ProductCard from '../components/ProductCard';
 
 function Perfil() {
-  const { usuario, publicaciones, cerrarSesion } = useContext(GlobalContext)
-  const navigate = useNavigate()
+  const {
+    usuario,
+    publicaciones,
+    cerrarSesion,
+    cargarPublicaciones,
+    cargandoPublicaciones,
+  } = useContext(GlobalContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (usuario) {
+      cargarPublicaciones().catch((error) => {
+        console.error('No se pudieron cargar las publicaciones:', error);
+      });
+    }
+  }, [usuario]);
 
   const misPublicaciones = publicaciones.filter(
-    (producto) => producto.usuario_id === usuario?.id
-  )
+    (producto) => Number(producto.usuario_id) === Number(usuario?.id)
+  );
 
   const handleLogout = () => {
-    cerrarSesion()
-    navigate('/login')
-  }
+    cerrarSesion();
+    navigate('/login');
+  };
 
   if (!usuario) {
     return (
@@ -29,7 +44,7 @@ function Perfil() {
           </Link>
         </main>
       </>
-    )
+    );
   }
 
   return (
@@ -67,23 +82,27 @@ function Perfil() {
             </Link>
           </div>
 
-          <div className="row g-4">
-            {misPublicaciones.length > 0 ? (
-              misPublicaciones.map((producto) => (
-                <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
-                  <ProductCard producto={producto} />
-                </div>
-              ))
-            ) : (
-              <p className="text-secondary">
-                Todavía no tienes publicaciones.
-              </p>
-            )}
-          </div>
+          {cargandoPublicaciones ? (
+            <p className="text-secondary">Cargando publicaciones...</p>
+          ) : (
+            <div className="row g-4">
+              {misPublicaciones.length > 0 ? (
+                misPublicaciones.map((producto) => (
+                  <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
+                    <ProductCard producto={producto} />
+                  </div>
+                ))
+              ) : (
+                <p className="text-secondary">
+                  Todavía no tienes publicaciones.
+                </p>
+              )}
+            </div>
+          )}
         </section>
       </main>
     </>
-  )
+  );
 }
 
-export default Perfil
+export default Perfil;

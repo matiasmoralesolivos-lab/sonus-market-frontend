@@ -1,19 +1,48 @@
 
-import { useContext } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { GlobalContext } from '../context/GlobalContext'
-import { usuariosMock } from '../data/mockData'
-import Navbar from '../components/Navbar'
+import { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
+import { obtenerPublicacionAPI } from '../services/api';
+import Navbar from '../components/Navbar';
 
 function DetallePublicacion() {
-  const { id } = useParams()
-  const { publicaciones } = useContext(GlobalContext)
+  const { id } = useParams();
+  const { publicaciones } = useContext(GlobalContext);
 
-  const producto = publicaciones.find(
-    (publicacion) => publicacion.id === Number(id)
-  )
+  const [producto, setProducto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
-  if (!producto) {
+  useEffect(() => {
+    const cargarProducto = async () => {
+      setCargando(true);
+      setError('');
+
+      try {
+        const datos = await obtenerPublicacionAPI(id);
+        setProducto(datos);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarProducto();
+  }, [id, publicaciones]);
+
+  if (cargando) {
+    return (
+      <>
+        <Navbar />
+        <main className="container py-5">
+          <p className="text-secondary">Cargando publicación...</p>
+        </main>
+      </>
+    );
+  }
+
+  if (error || !producto) {
     return (
       <>
         <Navbar />
@@ -24,12 +53,8 @@ function DetallePublicacion() {
           </Link>
         </main>
       </>
-    )
+    );
   }
-
-  const vendedor = usuariosMock.find(
-    (usuario) => usuario.id === producto.usuario_id
-  )
 
   return (
     <>
@@ -45,34 +70,30 @@ function DetallePublicacion() {
 
         <div className="row g-5 mt-2">
           <div className="col-12 col-md-6">
-          
-<div
-  className="bg-light border rounded-4 d-flex align-items-center justify-content-center overflow-hidden"
-  style={{ minHeight: '350px' }}
->
-  {producto.imagen_url ? (
-    <img
-      src={producto.imagen_url}
-      alt={producto.nombre}
-      className="img-fluid"
-      style={{ maxHeight: '350px', objectFit: 'contain' }}
-    />
-  ) : (
-    <span className="text-secondary">IMAGEN</span>
-  )}
-</div>
-
+            <div
+              className="bg-light border rounded-4 d-flex align-items-center justify-content-center overflow-hidden"
+              style={{ minHeight: '350px' }}
+            >
+              {producto.imagen_url ? (
+                <img
+                  src={producto.imagen_url}
+                  alt={producto.nombre}
+                  className="img-fluid"
+                  style={{ maxHeight: '350px', objectFit: 'contain' }}
+                />
+              ) : (
+                <span className="text-secondary">IMAGEN</span>
+              )}
+            </div>
           </div>
 
           <div className="col-12 col-md-6">
             <h1 className="h3 mb-3">{producto.nombre}</h1>
 
-            <p className="text-secondary">
-              {producto.descripcion}
-            </p>
+            <p className="text-secondary">{producto.descripcion}</p>
 
             <h2 className="h4 my-4">
-              ${producto.precio.toLocaleString('es-CL')}
+              ${Number(producto.precio).toLocaleString('es-CL')}
             </h2>
 
             <p>
@@ -87,21 +108,14 @@ function DetallePublicacion() {
 
             <h2 className="h5 mb-3">Información del vendedor</h2>
 
-            {vendedor ? (
-              <>
-                <p className="mb-1">{vendedor.nombre}</p>
-                <p className="text-secondary">{vendedor.email}</p>
-              </>
-            ) : (
-              <p className="text-secondary">
-                Información del vendedor no disponible.
-              </p>
-            )}
+            <p className="text-secondary">
+              ID del vendedor: {producto.usuario_id}
+            </p>
           </div>
         </div>
       </main>
     </>
-  )
+  );
 }
 
-export default DetallePublicacion
+export default DetallePublicacion;

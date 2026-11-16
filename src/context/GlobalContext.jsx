@@ -1,68 +1,142 @@
 
-import { createContext, useState } from "react";
-import { usuariosMock, publicacionesMock } from "../data/mockData";
+import { createContext, useState, useEffect } from 'react';
+
+import {
+  registrarUsuarioAPI,
+  iniciarSesionAPI,
+  obtenerPerfilAPI,
+  obtenerPublicacionesAPI,
+  crearPublicacionAPI,
+} from '../services/api';
 
 export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
-  const [usuarios, setUsuarios] = useState(usuariosMock);
-  const [publicaciones, setPublicaciones] = useState(publicacionesMock);
 
-  const iniciarSesion = (email) => {
-    const usuarioEncontrado = usuarios.find(
-      (usuario) => usuario.email === email
-    );
+  const [token, setToken] = useState(
+    () => localStorage.getItem('token')
+  );
 
-    if (usuarioEncontrado) {
-      setUsuario(usuarioEncontrado);
-      return usuarioEncontrado;
-    }
+  const [publicaciones, setPublicaciones] = useState([]);
+  const [cargandoPublicaciones, setCargandoPublicaciones] = useState(false);
 
-    return null;
-  };
+  // Recuperar sesión al iniciar o actualizar la aplicación
+  useEffect(() => {
+    const recuperarSesion = async () => {
+      if (!token) {
+        setUsuario(null);
+        return;
+      }
 
-  const registrarUsuario = (nombre, email) => {
-    const correoExiste = usuarios.some(
-      (usuario) => usuario.email === email
-    );
+      try {
+        const datos = await obtenerPerfilAPI(token);
+        setUsuario(datos.usuario);
+      } catch (error) {
+        console.error('No se pudo recuperar la sesión:', error.message);
 
-    if (correoExiste) {
-      return false;
-    }
-
-    const nuevoUsuario = {
-      id: Math.max(0, ...usuarios.map((usuario) => usuario.id)) + 1,
-      nombre,
-      email
+        localStorage.removeItem('token');
+        setToken(null);
+        setUsuario(null);
+      }
     };
 
-    setUsuarios((prevUsuarios) => [...prevUsuarios, nuevoUsuario]);
+    recuperarSesion();
+  }, [token]);
 
-    return true;
+  // Registrar un usuario
+  const registrarUsuario = async (nombre, email, password) => {
+    return await registrarUsuarioAPI({
+      nombre,
+      email,
+      password,
+    });
   };
 
+  // Iniciar sesión
+  const iniciarSesion = async (email, password) => {
+    const datos = await iniciarSesionAPI({
+      email,
+      password,
+    });
+
+    localStorage.setItem('token', datos.token);
+
+    setToken(datos.token);
+    setUsuario(datos.usuario);
+
+    return datos.usuario;
+  };
+
+  // Recuperar el perfil
+  const cargarPerfil = async () => {
+    if (!token) return null;
+
+    try {
+      const datos = await obtenerPerfilAPI(token);
+      setUsuario(datos.usuario);
+      return datos.usuario;
+    } catch (error) {
+      cerrarSesion();
+      throw error;
+    }
+  };
+
+  // Cerrar sesión
   const cerrarSesion = () => {
+    localStorage.removeItem('token');
+    setToken(null);
     setUsuario(null);
   };
 
-  const agregarPublicacion = (nuevaPublicacion) => {
+  // Obtener publicaciones desde PostgreSQL
+  const cargarPublicaciones = async () => {
+    setCargandoPublicaciones(true);
+
+    try {
+      const datos = await obtenerPublicacionesAPI();
+      setPublicaciones(datos);
+      return datos;
+    } catch (error) {
+      console.error('Error al cargar publicaciones:', error.message);
+      throw error;
+    } finally {
+      setCargandoPublicaciones(false);
+    }
+  };
+
+  // Crear publicación en PostgreSQL
+  const agregarPublicacion = async (nuevaPublicacion) => {
+    if (!token) {
+      throw new Error('Debes iniciar sesión para publicar');
+    }
+
+    const publicacionCreada = await crearPublicacionAPI(
+      nuevaPublicacion,
+      token
+    );
+
     setPublicaciones((prevPublicaciones) => [
+      publicacionCreada,
       ...prevPublicaciones,
-      nuevaPublicacion
     ]);
+
+    return publicacionCreada;
   };
 
   return (
     <GlobalContext.Provider
       value={{
         usuario,
-        usuarios,
+        token,
         publicaciones,
-        iniciarSesion,
+        cargandoPublicaciones,
         registrarUsuario,
+        iniciarSesion,
+        cargarPerfil,
         cerrarSesion,
-        agregarPublicacion
+        cargarPublicaciones,
+        agregarPublicacion,
       }}
     >
       {children}

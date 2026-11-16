@@ -1,51 +1,62 @@
 
-import { useState, useContext } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { GlobalContext } from '../context/GlobalContext'
-import Navbar from '../components/Navbar'
+import { useState, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
+import Navbar from '../components/Navbar';
 
 function CrearPublicacion() {
-  const { usuario, agregarPublicacion } = useContext(GlobalContext)
-  const navigate = useNavigate()
+  const { usuario, agregarPublicacion } = useContext(GlobalContext);
+  const navigate = useNavigate();
 
-  const [nombre, setNombre] = useState('')
-  const [descripcion, setDescripcion] = useState('')
-  const [precio, setPrecio] = useState('')
-  const [categoria, setCategoria] = useState('Instrumentos')
-  const [stock, setStock] = useState('1')
-  const [imagenUrl, setImagenUrl] = useState('')
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [precio, setPrecio] = useState('');
+  const [categoria, setCategoria] = useState('Instrumentos');
+  const [stock, setStock] = useState('1');
+  const [imagenUrl, setImagenUrl] = useState('');
+  const [error, setError] = useState('');
+  const [guardando, setGuardando] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setGuardando(true);
 
-    const nuevaPublicacion = {
-      id: Date.now(),
-      usuario_id: usuario.id,
-      nombre,
-      descripcion,
-      precio: Number(precio),
-      categoria,
-      stock: Number(stock),
-      imagen_url: imagenUrl
+    try {
+      const nuevaPublicacion = {
+        nombre,
+        descripcion,
+        precio: Number(precio),
+        categoria,
+        stock: Number(stock),
+        imagen_url: imagenUrl,
+      };
+
+      await agregarPublicacion(nuevaPublicacion);
+
+      alert('Publicación creada correctamente.');
+      navigate('/perfil');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setGuardando(false);
     }
-
-    agregarPublicacion(nuevaPublicacion)
-    alert('Publicación creada correctamente.')
-    navigate('/perfil')
-  }
+  };
 
   if (!usuario) {
     return (
       <>
         <Navbar />
         <main className="container py-5">
-          <h1 className="h4">Debes iniciar sesión para crear una publicación.</h1>
+          <h1 className="h4">
+            Debes iniciar sesión para crear una publicación.
+          </h1>
           <Link to="/login" className="btn btn-dark mt-3">
             Iniciar sesión
           </Link>
         </main>
       </>
-    )
+    );
   }
 
   return (
@@ -130,8 +141,18 @@ function CrearPublicacion() {
                 />
               </div>
 
-              <button type="submit" className="btn btn-dark">
-                Publicar producto
+              {error && (
+                <div className="alert alert-danger">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-dark"
+                disabled={guardando}
+              >
+                {guardando ? 'Guardando...' : 'Publicar producto'}
               </button>
             </form>
           </div>
@@ -158,7 +179,7 @@ function CrearPublicacion() {
         </div>
       </main>
     </>
-  )
+  );
 }
 
-export default CrearPublicacion
+export default CrearPublicacion;

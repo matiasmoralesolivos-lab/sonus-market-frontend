@@ -1,27 +1,33 @@
 
-import { useState, useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { GlobalContext } from '../context/GlobalContext'
-import Navbar from '../components/Navbar'
+import { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../context/GlobalContext';
+import Navbar from '../components/Navbar';
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
 
-  const { iniciarSesion } = useContext(GlobalContext)
-  const navigate = useNavigate()
+  const { iniciarSesion } = useContext(GlobalContext);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const usuario = iniciarSesion(email)
+    setError('');
+    setCargando(true);
 
-    if (usuario) {
-      navigate('/perfil')
-    } else {
-      alert('Correo electrónico no registrado.')
+    try {
+      await iniciarSesion(email, password);
+      navigate('/perfil');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setCargando(false);
     }
-  }
+  };
 
   return (
     <>
@@ -35,11 +41,18 @@ function Login() {
                 Iniciar sesión
               </h1>
 
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label">
                     Correo electrónico
                   </label>
+
                   <input
                     type="email"
                     className="form-control"
@@ -54,6 +67,7 @@ function Login() {
                   <label className="form-label">
                     Contraseña
                   </label>
+
                   <input
                     type="password"
                     className="form-control"
@@ -64,8 +78,12 @@ function Login() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-dark w-100">
-                  Ingresar
+                <button
+                  type="submit"
+                  className="btn btn-dark w-100"
+                  disabled={cargando}
+                >
+                  {cargando ? 'Ingresando...' : 'Ingresar'}
                 </button>
               </form>
 
@@ -78,7 +96,7 @@ function Login() {
         </div>
       </main>
     </>
-  )
+  );
 }
 
-export default Login
+export default Login;
