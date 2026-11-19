@@ -112,30 +112,6 @@ export const GlobalProvider = ({ children }) => {
       throw new Error('Debes iniciar sesión para publicar');
     }
 
-
-    // Actualizar publicación en PostgreSQL
-const editarPublicacion = async (id, datosActualizados) => {
-  if (!token) {
-    throw new Error('Debes iniciar sesión para editar una publicación');
-  }
-
-  const publicacionActualizada = await actualizarPublicacionAPI(
-    id,
-    datosActualizados,
-    token
-  );
-
-  setPublicaciones((prevPublicaciones) =>
-    prevPublicaciones.map((publicacion) =>
-      Number(publicacion.id) === Number(id)
-        ? publicacionActualizada
-        : publicacion
-    )
-  );
-
-  return publicacionActualizada;
-};
-
     const publicacionCreada = await crearPublicacionAPI(
       nuevaPublicacion,
       token
@@ -147,6 +123,29 @@ const editarPublicacion = async (id, datosActualizados) => {
     ]);
 
     return publicacionCreada;
+  };
+
+  // Actualizar publicación en PostgreSQL
+  const editarPublicacion = async (id, datosActualizados) => {
+    if (!token) {
+      throw new Error('Debes iniciar sesión para editar una publicación');
+    }
+
+    const publicacionActualizada = await actualizarPublicacionAPI(
+      id,
+      datosActualizados,
+      token
+    );
+
+    setPublicaciones((prevPublicaciones) =>
+      prevPublicaciones.map((publicacion) =>
+        Number(publicacion.id) === Number(id)
+          ? publicacionActualizada
+          : publicacion
+      )
+    );
+
+    return publicacionActualizada;
   };
 
   return (
