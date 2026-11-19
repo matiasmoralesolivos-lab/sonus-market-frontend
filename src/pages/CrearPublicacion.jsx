@@ -1,12 +1,18 @@
 
-import { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
+import { obtenerPublicacionAPI } from '../services/api';
 import Navbar from '../components/Navbar';
 
 function CrearPublicacion() {
-  const { usuario, agregarPublicacion } = useContext(GlobalContext);
+  const { usuario, token, agregarPublicacion, editarPublicacion } =
+    useContext(GlobalContext);
+
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const modoEdicion = Boolean(id);
 
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -16,6 +22,36 @@ function CrearPublicacion() {
   const [imagenUrl, setImagenUrl] = useState('');
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const [cargando, setCargando] = useState(modoEdicion);
+
+  // Cargar datos de la publicación cuando estamos editando
+  useEffect(() => {
+    if (!modoEdicion || !usuario || !token) return;
+
+    const cargarDatos = async () => {
+      try {
+        const publicacion = await obtenerPublicacionAPI(id);
+
+        if (Number(publicacion.usuario_id) !== Number(usuario.id)) {
+          setError('No tienes permiso para editar esta publicación.');
+          return;
+        }
+
+        setNombre(publicacion.nombre);
+        setDescripcion(publicacion.descripcion);
+        setPrecio(String(publicacion.precio));
+        setCategoria(publicacion.categoria);
+        setStock(String(publicacion.stock));
+        setImagenUrl(publicacion.imagen_url || '');
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarDatos();
+  }, [id, modoEdicion, usuario, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +59,7 @@ function CrearPublicacion() {
     setGuardando(true);
 
     try {
-      const nuevaPublicacion = {
+      const datosPublicacion = {
         nombre,
         descripcion,
         precio: Number(precio),
@@ -32,9 +68,14 @@ function CrearPublicacion() {
         imagen_url: imagenUrl,
       };
 
-      await agregarPublicacion(nuevaPublicacion);
+      if (modoEdicion) {
+        await editarPublicacion(id, datosPublicacion);
+        alert('Publicación actualizada correctamente.');
+      } else {
+        await agregarPublicacion(datosPublicacion);
+        alert('Publicación creada correctamente.');
+      }
 
-      alert('Publicación creada correctamente.');
       navigate('/perfil');
     } catch (error) {
       setError(error.message);
@@ -49,11 +90,22 @@ function CrearPublicacion() {
         <Navbar />
         <main className="container py-5">
           <h1 className="h4">
-            Debes iniciar sesión para crear una publicación.
+            Debes iniciar sesión para {modoEdicion ? 'editar' : 'crear'} una publicación.
           </h1>
           <Link to="/login" className="btn btn-dark mt-3">
             Iniciar sesión
           </Link>
+        </main>
+      </>
+    );
+  }
+
+  if (cargando) {
+    return (
+      <>
+        <Navbar />
+        <main className="container py-5">
+          <p>Cargando publicación...</p>
         </main>
       </>
     );
@@ -64,7 +116,9 @@ function CrearPublicacion() {
       <Navbar />
 
       <main className="container py-5">
-        <h1 className="h3 mb-4">Crear publicación</h1>
+        <h1 className="h3 mb-4">
+          {modoEdicion ? 'Editar publicación' : 'Crear publicación'}
+        </h1>
 
         <div className="row g-5">
           <div className="col-12 col-md-6">
@@ -142,9 +196,7 @@ function CrearPublicacion() {
               </div>
 
               {error && (
-                <div className="alert alert-danger">
-                  {error}
-                </div>
+                <div className="alert alert-danger">{error}</div>
               )}
 
               <button
@@ -152,7 +204,11 @@ function CrearPublicacion() {
                 className="btn btn-dark"
                 disabled={guardando}
               >
-                {guardando ? 'Guardando...' : 'Publicar producto'}
+                {guardando
+                  ? 'Guardando...'
+                  : modoEdicion
+                    ? 'Guardar cambios'
+                    : 'Publicar producto'}
               </button>
             </form>
           </div>

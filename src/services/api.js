@@ -64,3 +64,15 @@ export const crearPublicacionAPI = (publicacion, token) => {
     body: JSON.stringify(publicacion),
   });
 };
+
+
+// Actualizar una publicación
+export const actualizarPublicacionAPI = (id, publicacion, token) => {
+  return solicitar(`/publicaciones/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(publicacion),
+  });
+};

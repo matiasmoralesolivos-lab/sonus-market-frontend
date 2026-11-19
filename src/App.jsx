@@ -14,6 +14,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/publicaciones" element={<Galeria />} />
       <Route path="/publicaciones/crear" element={<CrearPublicacion />} />
+      <Route path="/publicaciones/editar/:id" element={<CrearPublicacion />} />
       <Route path="/publicaciones/:id" element={<DetallePublicacion />} />
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />

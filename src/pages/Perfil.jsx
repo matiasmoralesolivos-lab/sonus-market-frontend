@@ -1,9 +1,8 @@
-
-import { useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { GlobalContext } from '../context/GlobalContext';
-import Navbar from '../components/Navbar';
-import ProductCard from '../components/ProductCard';
+import { useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
+import Navbar from "../components/Navbar";
+import ProductCard from "../components/ProductCard";
 
 function Perfil() {
   const {
@@ -19,18 +18,18 @@ function Perfil() {
   useEffect(() => {
     if (usuario) {
       cargarPublicaciones().catch((error) => {
-        console.error('No se pudieron cargar las publicaciones:', error);
+        console.error("No se pudieron cargar las publicaciones:", error);
       });
     }
   }, [usuario]);
 
   const misPublicaciones = publicaciones.filter(
-    (producto) => Number(producto.usuario_id) === Number(usuario?.id)
+    (producto) => Number(producto.usuario_id) === Number(usuario?.id),
   );
 
   const handleLogout = () => {
     cerrarSesion();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (!usuario) {
@@ -90,6 +89,15 @@ function Perfil() {
                 misPublicaciones.map((producto) => (
                   <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
                     <ProductCard producto={producto} />
+
+                    <div className="mt-2">
+                      <Link
+                        to={`/publicaciones/editar/${producto.id}`}
+                        className="btn btn-outline-dark btn-sm w-100"
+                      >
+                        Editar publicación
+                      </Link>
+                    </div>
                   </div>
                 ))
               ) : (
