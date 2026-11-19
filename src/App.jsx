@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Registro from './pages/Registro'
 import Perfil from './pages/Perfil'
 import CrearPublicacion from './pages/CrearPublicacion'
+import RecuperarPassword from './pages/RecuperarPassword'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
       <Route path="/perfil" element={<Perfil />} />
+      <Route path="/recuperar-password" element={<RecuperarPassword />} />
     </Routes>
   )
 }

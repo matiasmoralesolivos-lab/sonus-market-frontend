@@ -76,3 +76,19 @@ export const actualizarPublicacionAPI = (id, publicacion, token) => {
     body: JSON.stringify(publicacion),
   });
 };
+
+// Solicitar recuperación de contraseña
+export const solicitarRecuperacionAPI = (email) => {
+  return solicitar('/usuarios/recuperar-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+};
+
+// Restablecer contraseña
+export const restablecerPasswordAPI = (token, nuevaPassword) => {
+  return solicitar('/usuarios/restablecer-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, nuevaPassword }),
+  });
+};
