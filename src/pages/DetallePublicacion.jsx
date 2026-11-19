@@ -1,9 +1,8 @@
-
-import { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { GlobalContext } from '../context/GlobalContext';
-import { obtenerPublicacionAPI } from '../services/api';
-import Navbar from '../components/Navbar';
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
+import { obtenerPublicacionAPI } from "../services/api";
+import Navbar from "../components/Navbar";
 
 function DetallePublicacion() {
   const { id } = useParams();
@@ -11,12 +10,12 @@ function DetallePublicacion() {
 
   const [producto, setProducto] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const cargarProducto = async () => {
       setCargando(true);
-      setError('');
+      setError("");
 
       try {
         const datos = await obtenerPublicacionAPI(id);
@@ -72,14 +71,14 @@ function DetallePublicacion() {
           <div className="col-12 col-md-6">
             <div
               className="bg-light border rounded-4 d-flex align-items-center justify-content-center overflow-hidden"
-              style={{ minHeight: '350px' }}
+              style={{ minHeight: "350px" }}
             >
               {producto.imagen_url ? (
                 <img
                   src={producto.imagen_url}
                   alt={producto.nombre}
                   className="img-fluid"
-                  style={{ maxHeight: '350px', objectFit: 'contain' }}
+                  style={{ maxHeight: "350px", objectFit: "contain" }}
                 />
               ) : (
                 <span className="text-secondary">IMAGEN</span>
@@ -93,7 +92,7 @@ function DetallePublicacion() {
             <p className="text-secondary">{producto.descripcion}</p>
 
             <h2 className="h4 my-4">
-              ${Number(producto.precio).toLocaleString('es-CL')}
+              ${Number(producto.precio).toLocaleString("es-CL")}
             </h2>
 
             <p>
@@ -108,9 +107,37 @@ function DetallePublicacion() {
 
             <h2 className="h5 mb-3">Información del vendedor</h2>
 
-            <p className="text-secondary">
-              ID del vendedor: {producto.usuario_id}
-            </p>
+            <div className="border rounded-4 p-3">
+              <div className="d-flex align-items-center gap-3 mb-3">
+                <div
+                  className="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                  style={{ width: "48px", height: "48px" }}
+                >
+                  <i className="bi bi-person fs-4"></i>
+                </div>
+
+                <div>
+                  <h3 className="h6 mb-1">{producto.vendedor_nombre}</h3>
+                  <span className="text-secondary small">
+                    Vendedor de SonusMarket
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-secondary small mb-3">
+                {producto.vendedor_email}
+              </p>
+
+              <a
+                href={`mailto:${producto.vendedor_email}?subject=${encodeURIComponent(
+                  `Consulta por ${producto.nombre}`,
+                )}`}
+                className="btn btn-dark w-100"
+              >
+                <i className="bi bi-envelope me-2"></i>
+                Contactar al vendedor
+              </a>
+            </div>
           </div>
         </div>
       </main>
