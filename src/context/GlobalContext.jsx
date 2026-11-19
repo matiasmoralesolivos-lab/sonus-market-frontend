@@ -4,6 +4,7 @@ import { createContext, useState, useEffect } from 'react';
 import {
   registrarUsuarioAPI,
   iniciarSesionAPI,
+  iniciarSesionGoogleAPI,
   obtenerPerfilAPI,
   obtenerPublicacionesAPI,
   crearPublicacionAPI,
@@ -68,6 +69,16 @@ export const GlobalProvider = ({ children }) => {
 
     return datos.usuario;
   };
+
+  const iniciarSesionGoogle = async (credential) => {
+  const datos = await iniciarSesionGoogleAPI(credential);
+
+  localStorage.setItem('token', datos.token);
+  setToken(datos.token);
+  setUsuario(datos.usuario);
+
+  return datos.usuario;
+};
 
   // Recuperar el perfil
   const cargarPerfil = async () => {
@@ -162,6 +173,7 @@ export const GlobalProvider = ({ children }) => {
         cargarPublicaciones,
         agregarPublicacion,
         editarPublicacion,
+        iniciarSesionGoogle,
       }}
     >
       {children}

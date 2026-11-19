@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
 import Navbar from "../components/Navbar";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ function Login() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  const { iniciarSesion } = useContext(GlobalContext);
+  const { iniciarSesion, iniciarSesionGoogle } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,6 +21,20 @@ function Login() {
 
     try {
       await iniciarSesion(email, password);
+      navigate("/perfil");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    setError("");
+    setCargando(true);
+
+    try {
+      await iniciarSesionGoogle(response.credential);
       navigate("/perfil");
     } catch (error) {
       setError(error.message);
@@ -85,6 +100,22 @@ function Login() {
                   {cargando ? "Ingresando..." : "Ingresar"}
                 </button>
               </form>
+
+              <div className="text-center my-3">
+                <span className="text-muted small">O continúa con</span>
+              </div>
+
+              <div className="d-flex justify-content-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() =>
+                    setError("No fue posible iniciar sesión con Google")
+                  }
+                  text="continue_with"
+                  shape="rectangular"
+                  width="280"
+                />
+              </div>
 
               <p className="text-center small mt-4 mb-0">
                 ¿No tienes una cuenta?{" "}

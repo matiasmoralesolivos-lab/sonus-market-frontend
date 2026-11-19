@@ -92,3 +92,12 @@ export const restablecerPasswordAPI = (token, nuevaPassword) => {
     body: JSON.stringify({ token, nuevaPassword }),
   });
 };
+
+
+// Iniciar sesión con Google
+export const iniciarSesionGoogleAPI = (credential) => {
+  return solicitar('/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential }),
+  });
+};
