@@ -70,7 +70,7 @@ function Navbar() {
                   Mi perfil
                 </Link>
 
-                <span className="navbar-text text-white-50 small">
+                <span className="navbar-text sonus-user-name">
                   Hola, {usuario.nombre}
                 </span>
 

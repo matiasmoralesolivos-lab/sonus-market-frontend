@@ -1,48 +1,41 @@
-
-import { useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { GlobalContext } from '../context/GlobalContext';
-import Navbar from '../components/Navbar';
-import ProductCard from '../components/ProductCard';
-import './Home.css';
+import { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
+import Navbar from "../components/Navbar";
+import ProductCard from "../components/ProductCard";
+import "./Home.css";
 
 const categorias = [
   {
-    nombre: 'Audio profesional',
-    descripcion: 'Monitores y amplificación',
+    nombre: "Audio profesional",
+    descripcion: "Monitores y amplificación",
   },
   {
-    nombre: 'Instrumentos',
-    descripcion: 'Guitarras, bajos y teclados',
+    nombre: "Instrumentos",
+    descripcion: "Guitarras, bajos y teclados",
   },
   {
-    nombre: 'Accesorios',
-    descripcion: 'Cables, atriles y otros',
+    nombre: "Accesorios",
+    descripcion: "Cables, atriles y otros",
   },
   {
-    nombre: 'Otros',
-    descripcion: 'Productos variados',
+    nombre: "Otros",
+    descripcion: "Productos variados",
   },
 ];
 
 function Home() {
-  const {
-    publicaciones,
-    cargarPublicaciones,
-    cargandoPublicaciones,
-  } = useContext(GlobalContext);
+  const { publicaciones, cargarPublicaciones, cargandoPublicaciones } =
+    useContext(GlobalContext);
 
   useEffect(() => {
     cargarPublicaciones().catch((error) => {
-      console.error('Error al cargar publicaciones recientes:', error);
+      console.error("Error al cargar publicaciones recientes:", error);
     });
   }, []);
 
   const publicacionesRecientes = [...publicaciones]
-    .sort(
-      (a, b) =>
-        new Date(b.fecha_creacion) - new Date(a.fecha_creacion)
-    )
+    .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
     .slice(0, 3);
 
   return (
@@ -53,9 +46,7 @@ function Home() {
         <section className="home-hero">
           <h1>Audio profesional y música</h1>
 
-          <p>
-            Encuentra equipos, accesorios e instrumentos musicales.
-          </p>
+          <p>Encuentra equipos, accesorios e instrumentos musicales.</p>
 
           <Link to="/publicaciones" className="btn btn-outline-dark btn-sm">
             Explorar productos
@@ -68,7 +59,10 @@ function Home() {
           <div className="row g-3">
             {categorias.map((categoria) => (
               <div className="col-6 col-lg-3" key={categoria.nombre}>
-                <Link to="/publicaciones" className="category-card">
+                <Link
+                  to={`/publicaciones?categoria=${encodeURIComponent(categoria.nombre)}`}
+                  className="category-card"
+                >
                   <h3>{categoria.nombre}</h3>
                   <p>{categoria.descripcion}</p>
                 </Link>

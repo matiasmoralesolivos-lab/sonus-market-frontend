@@ -49,6 +49,11 @@ export const obtenerPublicacionesAPI = () => {
   return solicitar('/publicaciones');
 };
 
+// Obtener catálogo de etiquetas
+export const obtenerEtiquetasAPI = () => {
+  return solicitar('/publicaciones/etiquetas');
+};
+
 // Obtener una publicación por ID
 export const obtenerPublicacionAPI = (id) => {
   return solicitar(`/publicaciones/${id}`);

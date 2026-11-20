@@ -1,17 +1,23 @@
 
 :root {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
-  color: #243244;
-  background: #f4f6f8;
 
-  --color-primary: #101d2d;
-  --color-accent: #176b73;
-  --color-accent-light: #e8f1f2;
-  --color-background: #f4f6f8;
+  --color-primary: #17191d;
+  --color-accent: #ff7936;
+  --color-accent-hover: #e96324;
+  --color-accent-light: #fff0e8;
+
+  --color-background: #f4f3f1;
   --color-surface: #ffffff;
-  --color-text: #243244;
-  --color-muted: #788493;
-  --color-border: #e1e6eb;
+  --color-text: #24262b;
+  --color-muted: #777b84;
+  --color-border: #e4e2df;
+
+  --color-dark: #17191d;
+  --color-dark-soft: #22252b;
+
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 * {
@@ -29,129 +35,151 @@ body {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
   text-decoration: none;
 }
 
 a:hover {
-  color: #10545b;
+  color: var(--color-accent);
 }
 
 h1, h2, h3, h4, h5 {
   color: var(--color-primary);
-  letter-spacing: -0.3px;
+  letter-spacing: -0.5px;
+  font-weight: 700;
 }
 
 .btn-dark {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--color-dark);
+  border-color: var(--color-dark);
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .btn-dark:hover {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
+  color: #ffffff;
 }
 
 .btn-outline-dark {
-  color: var(--color-primary);
-  border-color: #aeb9c5;
+  color: var(--color-dark);
+  border-color: #aeb0b4;
 }
 
 .btn-outline-dark:hover {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--color-dark);
+  border-color: var(--color-dark);
+  color: #ffffff;
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .form-control,
 .form-select {
   border-color: var(--color-border);
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: 9px;
+  padding: 11px 13px;
 }
 
 .form-control:focus,
 .form-select:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(23, 107, 115, 0.12);
+  box-shadow: 0 0 0 3px rgba(255, 121, 54, 0.13);
 }
 
 .card {
   border-color: var(--color-border) !important;
   background-color: var(--color-surface);
-  box-shadow: 0 3px 12px rgba(16, 29, 45, 0.04);
+  box-shadow: 0 4px 16px rgba(23, 25, 29, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(16, 29, 45, 0.09);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(23, 25, 29, 0.10);
 }
 
 .text-secondary {
   color: var(--color-muted) !important;
 }
 
-/* Identidad visual SonusMarket */
+/* Identidad visual SonusMarket - Dark Studio */
 
 .sonus-navbar {
-  background: #101d2d;
+  background: var(--color-dark);
   padding: 16px 0;
-  box-shadow: 0 3px 12px rgba(16, 29, 45, 0.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
 }
 
 .sonus-brand {
   color: #ffffff !important;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
 }
 
 .brand-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  margin-right: 8px;
-  border-radius: 8px;
-  background: #176b73;
-  color: white;
+  width: 32px;
+  height: 32px;
+  margin-right: 9px;
+  border-radius: 9px;
+  background: var(--color-accent);
+  color: #17191d;
 }
 
 .sonus-nav-link {
-  color: #d5dee8 !important;
+  color: #c9cbd0 !important;
   font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .sonus-nav-link:hover {
-  color: #ffffff !important;
+  color: var(--color-accent) !important;
 }
 
 .sonus-btn-primary {
-  background: #176b73;
-  color: white;
-  border: 1px solid #176b73;
-  padding: 7px 16px;
+  background: var(--color-accent);
+  color: #17191d;
+  border: 1px solid var(--color-accent);
+  padding: 8px 17px;
+  font-weight: 700;
+  border-radius: 7px;
 }
 
 .sonus-btn-primary:hover {
-  background: #21818a;
-  color: white;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: #ffffff;
 }
 
 .sonus-btn-outline {
   color: #ffffff;
-  border: 1px solid #718096;
+  border: 1px solid #666970;
+  border-radius: 7px;
 }
 
 .sonus-btn-outline:hover {
   background: #ffffff;
-  color: #101d2d;
+  color: var(--color-dark);
 }
 
 /* Menú hamburguesa */
+
 .sonus-navbar .navbar-toggler {
-  border: 1px solid #718096;
+  border: 1px solid #666970;
   padding: 6px 10px;
 }
 
@@ -164,6 +192,7 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Menú desplegado en móviles */
+
 @media (max-width: 991.98px) {
   .sonus-navbar .navbar-collapse.show {
     display: block;
@@ -186,4 +215,29 @@ h1, h2, h3, h4, h5 {
     text-align: center;
     margin-top: 6px;
   }
+}
+
+
+
+.sonus-user-name {
+  color: #b9bdc5;
+  font-size: 13px;
+  padding: 7px 0;
+}
+
+.sonus-nav-link {
+  transition: color 0.2s ease;
+}
+
+.sonus-nav-link:hover {
+  color: var(--color-accent) !important;
+}
+
+.sonus-btn-primary {
+  font-weight: 600;
+  border-radius: 7px;
+}
+
+.sonus-btn-outline {
+  border-radius: 7px;
 }

@@ -1,36 +1,39 @@
-
-import { useContext, useState, useEffect } from 'react'
-import { GlobalContext } from '../context/GlobalContext'
-import Navbar from '../components/Navbar'
-import ProductCard from '../components/ProductCard'
+import { useContext, useState, useEffect } from "react";
+import { GlobalContext } from "../context/GlobalContext";
+import Navbar from "../components/Navbar";
+import ProductCard from "../components/ProductCard";
+import { useSearchParams } from "react-router-dom";
 
 function Galeria() {
-  const {
-    publicaciones,
-    cargarPublicaciones,
-    cargandoPublicaciones
-  } = useContext(GlobalContext)
+  const { publicaciones, cargarPublicaciones, cargandoPublicaciones } =
+    useContext(GlobalContext);
 
-  const [categoria, setCategoria] = useState('Todas')
-  const [busqueda, setBusqueda] = useState('')
+  const [searchParams] = useSearchParams();
+
+  const [categoria, setCategoria] = useState(
+    searchParams.get("categoria") || "Todas",
+  );
+  const [busqueda, setBusqueda] = useState("");
 
   // Cargar publicaciones desde PostgreSQL al entrar
   useEffect(() => {
     cargarPublicaciones().catch((error) => {
-      console.error('Error al cargar la galería:', error)
-    })
-  }, [])
+      console.error("Error al cargar la galería:", error);
+    });
+  }, []);
+
+  
 
   const publicacionesFiltradas = publicaciones.filter((producto) => {
     const coincideCategoria =
-      categoria === 'Todas' || producto.categoria === categoria
+      categoria === "Todas" || producto.categoria === categoria;
 
     const coincideBusqueda = producto.nombre
       .toLowerCase()
-      .includes(busqueda.toLowerCase())
+      .includes(busqueda.toLowerCase());
 
-    return coincideCategoria && coincideBusqueda
-  })
+    return coincideCategoria && coincideBusqueda;
+  });
 
   return (
     <>
@@ -60,8 +63,10 @@ function Galeria() {
                 onChange={(e) => setCategoria(e.target.value)}
               >
                 <option value="Todas">Todas</option>
+                <option value="Audio profesional">Audio profesional</option>
                 <option value="Instrumentos">Instrumentos</option>
-                <option value="Equipos de sonido">Equipos de sonido</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Otros">Otros</option>
               </select>
             </div>
           </aside>
@@ -86,7 +91,7 @@ function Galeria() {
         </div>
       </main>
     </>
-  )
+  );
 }
 
-export default Galeria
+export default Galeria;

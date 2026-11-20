@@ -1,9 +1,8 @@
-
-import { useState, useContext, useEffect } from 'react';
-import { useNavigate, Link, useParams } from 'react-router-dom';
-import { GlobalContext } from '../context/GlobalContext';
-import { obtenerPublicacionAPI } from '../services/api';
-import Navbar from '../components/Navbar';
+import { useState, useContext, useEffect } from "react";
+import { useNavigate, Link, useParams } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
+import { obtenerPublicacionAPI, obtenerEtiquetasAPI } from "../services/api";
+import Navbar from "../components/Navbar";
 
 function CrearPublicacion() {
   const { usuario, token, agregarPublicacion, editarPublicacion } =
@@ -14,15 +13,34 @@ function CrearPublicacion() {
 
   const modoEdicion = Boolean(id);
 
-  const [nombre, setNombre] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [precio, setPrecio] = useState('');
-  const [categoria, setCategoria] = useState('Instrumentos');
-  const [stock, setStock] = useState('1');
-  const [imagenUrl, setImagenUrl] = useState('');
-  const [error, setError] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [categoria, setCategoria] = useState("Instrumentos");
+  const [stock, setStock] = useState("1");
+  const [imagenUrl, setImagenUrl] = useState("");
+  const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [cargando, setCargando] = useState(modoEdicion);
+  const [etiquetas, setEtiquetas] = useState([]);
+  const [etiquetasSeleccionadas, setEtiquetasSeleccionadas] = useState([]);
+  const [cargandoEtiquetas, setCargandoEtiquetas] = useState(true);
+
+  // Cargar catálogo de etiquetas
+  useEffect(() => {
+    const cargarEtiquetas = async () => {
+      try {
+        const datos = await obtenerEtiquetasAPI();
+        setEtiquetas(datos);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setCargandoEtiquetas(false);
+      }
+    };
+
+    cargarEtiquetas();
+  }, []);
 
   // Cargar datos de la publicación cuando estamos editando
   useEffect(() => {
@@ -33,7 +51,7 @@ function CrearPublicacion() {
         const publicacion = await obtenerPublicacionAPI(id);
 
         if (Number(publicacion.usuario_id) !== Number(usuario.id)) {
-          setError('No tienes permiso para editar esta publicación.');
+          setError("No tienes permiso para editar esta publicación.");
           return;
         }
 
@@ -42,7 +60,10 @@ function CrearPublicacion() {
         setPrecio(String(publicacion.precio));
         setCategoria(publicacion.categoria);
         setStock(String(publicacion.stock));
-        setImagenUrl(publicacion.imagen_url || '');
+        setImagenUrl(publicacion.imagen_url || "");
+        setEtiquetasSeleccionadas(
+          (publicacion.etiquetas || []).map((etiqueta) => Number(etiqueta.id)),
+        );
       } catch (error) {
         setError(error.message);
       } finally {
@@ -55,7 +76,7 @@ function CrearPublicacion() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setGuardando(true);
 
     try {
@@ -66,17 +87,18 @@ function CrearPublicacion() {
         categoria,
         stock: Number(stock),
         imagen_url: imagenUrl,
+        etiquetas: etiquetasSeleccionadas,
       };
 
       if (modoEdicion) {
         await editarPublicacion(id, datosPublicacion);
-        alert('Publicación actualizada correctamente.');
+        alert("Publicación actualizada correctamente.");
       } else {
         await agregarPublicacion(datosPublicacion);
-        alert('Publicación creada correctamente.');
+        alert("Publicación creada correctamente.");
       }
 
-      navigate('/perfil');
+      navigate("/perfil");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -90,7 +112,8 @@ function CrearPublicacion() {
         <Navbar />
         <main className="container py-5">
           <h1 className="h4">
-            Debes iniciar sesión para {modoEdicion ? 'editar' : 'crear'} una publicación.
+            Debes iniciar sesión para {modoEdicion ? "editar" : "crear"} una
+            publicación.
           </h1>
           <Link to="/login" className="btn btn-dark mt-3">
             Iniciar sesión
@@ -117,7 +140,7 @@ function CrearPublicacion() {
 
       <main className="container py-5">
         <h1 className="h3 mb-4">
-          {modoEdicion ? 'Editar publicación' : 'Crear publicación'}
+          {modoEdicion ? "Editar publicación" : "Crear publicación"}
         </h1>
 
         <div className="row g-5">
@@ -162,13 +185,83 @@ function CrearPublicacion() {
                 <select
                   className="form-select"
                   value={categoria}
-                  onChange={(e) => setCategoria(e.target.value)}
+                  onChange={(e) => {
+                    const nuevaCategoria = e.target.value;
+
+                    setCategoria(nuevaCategoria);
+
+                    setEtiquetasSeleccionadas((seleccionadas) =>
+                      seleccionadas.filter((id) =>
+                        etiquetas.some(
+                          (etiqueta) =>
+                            etiqueta.id === id &&
+                            etiqueta.categoria === nuevaCategoria,
+                        ),
+                      ),
+                    );
+                  }}
                 >
+                  <option value="Audio profesional">Audio profesional</option>
                   <option value="Instrumentos">Instrumentos</option>
-                  <option value="Equipos de sonido">Equipos de sonido</option>
                   <option value="Accesorios">Accesorios</option>
                   <option value="Otros">Otros</option>
                 </select>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Etiquetas</label>
+
+                {cargandoEtiquetas ? (
+                  <p className="text-secondary small">Cargando etiquetas...</p>
+                ) : (
+                  <div className="border rounded-3 p-3">
+                    {etiquetas
+                      .filter((etiqueta) => etiqueta.categoria === categoria)
+                      .map((etiqueta) => (
+                        <div className="form-check" key={etiqueta.id}>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`etiqueta-${etiqueta.id}`}
+                            checked={etiquetasSeleccionadas.includes(
+                              etiqueta.id,
+                            )}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEtiquetasSeleccionadas([
+                                  ...etiquetasSeleccionadas,
+                                  etiqueta.id,
+                                ]);
+                              } else {
+                                setEtiquetasSeleccionadas(
+                                  etiquetasSeleccionadas.filter(
+                                    (id) => id !== etiqueta.id,
+                                  ),
+                                );
+                              }
+                            }}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`etiqueta-${etiqueta.id}`}
+                          >
+                            {etiqueta.nombre}
+                          </label>
+                        </div>
+                      ))}
+
+                    {!etiquetas.some(
+                      (etiqueta) => etiqueta.categoria === categoria,
+                    ) && (
+                      <p className="text-secondary small mb-0">
+                        No hay etiquetas disponibles para esta categoría.
+                      </p>
+                    )}
+                  </div>
+                )}
+                <small className="text-secondary">
+                  Puedes seleccionar varias etiquetas.
+                </small>
               </div>
 
               <div className="mb-3">
@@ -195,9 +288,7 @@ function CrearPublicacion() {
                 />
               </div>
 
-              {error && (
-                <div className="alert alert-danger">{error}</div>
-              )}
+              {error && <div className="alert alert-danger">{error}</div>}
 
               <button
                 type="submit"
@@ -205,10 +296,10 @@ function CrearPublicacion() {
                 disabled={guardando}
               >
                 {guardando
-                  ? 'Guardando...'
+                  ? "Guardando..."
                   : modoEdicion
-                    ? 'Guardar cambios'
-                    : 'Publicar producto'}
+                    ? "Guardar cambios"
+                    : "Publicar producto"}
               </button>
             </form>
           </div>
@@ -218,14 +309,14 @@ function CrearPublicacion() {
 
             <div
               className="bg-light border rounded-4 d-flex align-items-center justify-content-center"
-              style={{ minHeight: '350px' }}
+              style={{ minHeight: "350px" }}
             >
               {imagenUrl ? (
                 <img
                   src={imagenUrl}
                   alt="Vista previa del producto"
                   className="img-fluid rounded-4"
-                  style={{ maxHeight: '350px' }}
+                  style={{ maxHeight: "350px" }}
                 />
               ) : (
                 <span className="text-secondary">IMAGEN</span>
