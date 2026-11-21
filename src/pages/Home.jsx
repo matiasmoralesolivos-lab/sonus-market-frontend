@@ -4,6 +4,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import "./Home.css";
+import Footer from "../components/Footer";
 
 const categorias = [
   {
@@ -34,9 +35,9 @@ function Home() {
     });
   }, []);
 
-  const publicacionesRecientes = [...publicaciones]
-    .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
-    .slice(0, 3);
+const publicacionesRecientes = [...publicaciones]
+  .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
+  .slice(0, 6);
 
   return (
     <>
@@ -90,9 +91,21 @@ function Home() {
                 </p>
               )}
             </div>
+
+
+
+
           )}
+
+<div className="text-center mt-4">
+  <Link to="/publicaciones" className="btn btn-outline-dark">
+    Ver todas las publicaciones
+  </Link>
+</div>
+
         </section>
       </main>
+      <Footer />
     </>
   );
 }

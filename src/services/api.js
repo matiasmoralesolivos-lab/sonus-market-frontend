@@ -106,3 +106,13 @@ export const iniciarSesionGoogleAPI = (credential) => {
     body: JSON.stringify({ credential }),
   });
 };
+
+// Obtener credenciales temporales para subir imágenes a ImageKit
+export const obtenerAutenticacionImagenesAPI = (token) => {
+  return solicitar('/imagenes/auth', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

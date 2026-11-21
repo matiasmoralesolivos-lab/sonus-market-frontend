@@ -1,7 +1,12 @@
+
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
-import { obtenerPublicacionAPI, obtenerEtiquetasAPI } from "../services/api";
+import {
+  obtenerPublicacionAPI,
+  obtenerEtiquetasAPI,
+} from "../services/api";
+import { subirImagenImageKit } from "../services/imagenesService";
 import Navbar from "../components/Navbar";
 
 function CrearPublicacion() {
@@ -19,12 +24,27 @@ function CrearPublicacion() {
   const [categoria, setCategoria] = useState("Instrumentos");
   const [stock, setStock] = useState("1");
   const [imagenUrl, setImagenUrl] = useState("");
+  const [archivoImagen, setArchivoImagen] = useState(null);
+  const [vistaPrevia, setVistaPrevia] = useState("");
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [cargando, setCargando] = useState(modoEdicion);
   const [etiquetas, setEtiquetas] = useState([]);
   const [etiquetasSeleccionadas, setEtiquetasSeleccionadas] = useState([]);
   const [cargandoEtiquetas, setCargandoEtiquetas] = useState(true);
+
+  // Crear vista previa de la imagen seleccionada
+  useEffect(() => {
+    if (!archivoImagen) {
+      setVistaPrevia("");
+      return;
+    }
+
+    const url = URL.createObjectURL(archivoImagen);
+    setVistaPrevia(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [archivoImagen]);
 
   // Cargar catálogo de etiquetas
   useEffect(() => {
@@ -62,7 +82,9 @@ function CrearPublicacion() {
         setStock(String(publicacion.stock));
         setImagenUrl(publicacion.imagen_url || "");
         setEtiquetasSeleccionadas(
-          (publicacion.etiquetas || []).map((etiqueta) => Number(etiqueta.id)),
+          (publicacion.etiquetas || []).map((etiqueta) =>
+            Number(etiqueta.id)
+          )
         );
       } catch (error) {
         setError(error.message);
@@ -74,19 +96,60 @@ function CrearPublicacion() {
     cargarDatos();
   }, [id, modoEdicion, usuario, token]);
 
+  // Validar la imagen seleccionada
+  const handleSeleccionImagen = (e) => {
+    const archivo = e.target.files[0];
+
+    if (!archivo) return;
+
+    const formatosPermitidos = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!formatosPermitidos.includes(archivo.type)) {
+      setError("Selecciona una imagen JPG, PNG o WebP.");
+      e.target.value = "";
+      return;
+    }
+
+    const tamanoMaximo = 3 * 1024 * 1024;
+
+    if (archivo.size > tamanoMaximo) {
+      setError("La imagen no puede superar los 3 MB.");
+      e.target.value = "";
+      return;
+    }
+
+    setArchivoImagen(archivo);
+    setError("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setGuardando(true);
 
     try {
+      if (!archivoImagen && !imagenUrl) {
+        throw new Error("Debes seleccionar una imagen para el producto.");
+      }
+
+      // Si se seleccionó una imagen nueva, subirla a ImageKit
+      let urlImagenFinal = imagenUrl;
+
+      if (archivoImagen) {
+        urlImagenFinal = await subirImagenImageKit(archivoImagen, token);
+      }
+
       const datosPublicacion = {
         nombre,
         descripcion,
         precio: Number(precio),
         categoria,
         stock: Number(stock),
-        imagen_url: imagenUrl,
+        imagen_url: urlImagenFinal,
         etiquetas: etiquetasSeleccionadas,
       };
 
@@ -112,8 +175,8 @@ function CrearPublicacion() {
         <Navbar />
         <main className="container py-5">
           <h1 className="h4">
-            Debes iniciar sesión para {modoEdicion ? "editar" : "crear"} una
-            publicación.
+            Debes iniciar sesión para{" "}
+            {modoEdicion ? "editar" : "crear"} una publicación.
           </h1>
           <Link to="/login" className="btn btn-dark mt-3">
             Iniciar sesión
@@ -195,13 +258,15 @@ function CrearPublicacion() {
                         etiquetas.some(
                           (etiqueta) =>
                             etiqueta.id === id &&
-                            etiqueta.categoria === nuevaCategoria,
-                        ),
-                      ),
+                            etiqueta.categoria === nuevaCategoria
+                        )
+                      )
                     );
                   }}
                 >
-                  <option value="Audio profesional">Audio profesional</option>
+                  <option value="Audio profesional">
+                    Audio profesional
+                  </option>
                   <option value="Instrumentos">Instrumentos</option>
                   <option value="Accesorios">Accesorios</option>
                   <option value="Otros">Otros</option>
@@ -212,11 +277,15 @@ function CrearPublicacion() {
                 <label className="form-label">Etiquetas</label>
 
                 {cargandoEtiquetas ? (
-                  <p className="text-secondary small">Cargando etiquetas...</p>
+                  <p className="text-secondary small">
+                    Cargando etiquetas...
+                  </p>
                 ) : (
                   <div className="border rounded-3 p-3">
                     {etiquetas
-                      .filter((etiqueta) => etiqueta.categoria === categoria)
+                      .filter(
+                        (etiqueta) => etiqueta.categoria === categoria
+                      )
                       .map((etiqueta) => (
                         <div className="form-check" key={etiqueta.id}>
                           <input
@@ -224,7 +293,7 @@ function CrearPublicacion() {
                             type="checkbox"
                             id={`etiqueta-${etiqueta.id}`}
                             checked={etiquetasSeleccionadas.includes(
-                              etiqueta.id,
+                              etiqueta.id
                             )}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -235,8 +304,8 @@ function CrearPublicacion() {
                               } else {
                                 setEtiquetasSeleccionadas(
                                   etiquetasSeleccionadas.filter(
-                                    (id) => id !== etiqueta.id,
-                                  ),
+                                    (id) => id !== etiqueta.id
+                                  )
                                 );
                               }
                             }}
@@ -251,7 +320,7 @@ function CrearPublicacion() {
                       ))}
 
                     {!etiquetas.some(
-                      (etiqueta) => etiqueta.categoria === categoria,
+                      (etiqueta) => etiqueta.categoria === categoria
                     ) && (
                       <p className="text-secondary small mb-0">
                         No hay etiquetas disponibles para esta categoría.
@@ -259,6 +328,7 @@ function CrearPublicacion() {
                     )}
                   </div>
                 )}
+
                 <small className="text-secondary">
                   Puedes seleccionar varias etiquetas.
                 </small>
@@ -277,18 +347,28 @@ function CrearPublicacion() {
               </div>
 
               <div className="mb-4">
-                <label className="form-label">URL de imagen</label>
+                <label className="form-label">
+                  Imagen del producto
+                </label>
+
                 <input
-                  type="url"
+                  type="file"
                   className="form-control"
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                  value={imagenUrl}
-                  onChange={(e) => setImagenUrl(e.target.value)}
-                  required
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleSeleccionImagen}
+                  required={!modoEdicion && !imagenUrl}
                 />
+
+                <small className="text-secondary">
+                  Formatos permitidos: JPG, PNG y WebP. Máximo 3 MB.
+                  {modoEdicion &&
+                    " Si no seleccionas otra imagen, se conservará la actual."}
+                </small>
               </div>
 
-              {error && <div className="alert alert-danger">{error}</div>}
+              {error && (
+                <div className="alert alert-danger">{error}</div>
+              )}
 
               <button
                 type="submit"
@@ -311,12 +391,16 @@ function CrearPublicacion() {
               className="bg-light border rounded-4 d-flex align-items-center justify-content-center"
               style={{ minHeight: "350px" }}
             >
-              {imagenUrl ? (
+              {vistaPrevia || imagenUrl ? (
                 <img
-                  src={imagenUrl}
+                  src={vistaPrevia || imagenUrl}
                   alt="Vista previa del producto"
                   className="img-fluid rounded-4"
-                  style={{ maxHeight: "350px" }}
+                  style={{
+                    maxHeight: "350px",
+                    maxWidth: "100%",
+                    objectFit: "contain",
+                  }}
                 />
               ) : (
                 <span className="text-secondary">IMAGEN</span>
