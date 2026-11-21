@@ -8,20 +8,25 @@ import Registro from './pages/Registro'
 import Perfil from './pages/Perfil'
 import CrearPublicacion from './pages/CrearPublicacion'
 import RecuperarPassword from './pages/RecuperarPassword'
+import Footer from './components/Footer'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/publicaciones" element={<Galeria />} />
-      <Route path="/publicaciones/crear" element={<CrearPublicacion />} />
-      <Route path="/publicaciones/editar/:id" element={<CrearPublicacion />} />
-      <Route path="/publicaciones/:id" element={<DetallePublicacion />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/registro" element={<Registro />} />
-      <Route path="/perfil" element={<Perfil />} />
-      <Route path="/recuperar-password" element={<RecuperarPassword />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/publicaciones" element={<Galeria />} />
+        <Route path="/publicaciones/crear" element={<CrearPublicacion />} />
+        <Route path="/publicaciones/editar/:id" element={<CrearPublicacion />} />
+        <Route path="/publicaciones/:id" element={<DetallePublicacion />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/recuperar-password" element={<RecuperarPassword />} />
+      </Routes>
+
+      <Footer />
+    </>
   )
 }
 

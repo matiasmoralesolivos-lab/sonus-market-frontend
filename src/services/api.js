@@ -82,6 +82,16 @@ export const actualizarPublicacionAPI = (id, publicacion, token) => {
   });
 };
 
+// Eliminar una publicación
+export const eliminarPublicacionAPI = (id, token) => {
+  return solicitar(`/publicaciones/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 // Solicitar recuperación de contraseña
 export const solicitarRecuperacionAPI = (email) => {
   return solicitar('/usuarios/recuperar-password', {

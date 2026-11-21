@@ -4,7 +4,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import "./Home.css";
-import Footer from "../components/Footer";
+
 
 const categorias = [
   {
@@ -105,7 +105,7 @@ const publicacionesRecientes = [...publicaciones]
 
         </section>
       </main>
-      <Footer />
+     
     </>
   );
 }

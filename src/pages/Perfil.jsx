@@ -1,3 +1,4 @@
+
 import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
@@ -11,6 +12,7 @@ function Perfil() {
     cerrarSesion,
     cargarPublicaciones,
     cargandoPublicaciones,
+    eliminarPublicacion,
   } = useContext(GlobalContext);
 
   const navigate = useNavigate();
@@ -24,12 +26,27 @@ function Perfil() {
   }, [usuario]);
 
   const misPublicaciones = publicaciones.filter(
-    (producto) => Number(producto.usuario_id) === Number(usuario?.id),
+    (producto) => Number(producto.usuario_id) === Number(usuario?.id)
   );
 
   const handleLogout = () => {
     cerrarSesion();
     navigate("/login");
+  };
+
+  const handleEliminar = async (producto) => {
+    const confirmar = window.confirm(
+      `¿Estás seguro de que deseas eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`
+    );
+
+    if (!confirmar) return;
+
+    try {
+      await eliminarPublicacion(producto.id);
+      alert("Publicación eliminada correctamente.");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   if (!usuario) {
@@ -90,13 +107,20 @@ function Perfil() {
                   <div className="col-12 col-md-6 col-lg-4" key={producto.id}>
                     <ProductCard producto={producto} />
 
-                    <div className="mt-2">
+                    <div className="d-flex gap-2 mt-2">
                       <Link
                         to={`/publicaciones/editar/${producto.id}`}
-                        className="btn btn-outline-dark btn-sm w-100"
+                        className="btn btn-outline-dark btn-sm flex-grow-1"
                       >
-                        Editar publicación
+                        Editar
                       </Link>
+
+                      <button
+                        className="btn btn-outline-danger btn-sm flex-grow-1"
+                        onClick={() => handleEliminar(producto)}
+                      >
+                        Eliminar
+                      </button>
                     </div>
                   </div>
                 ))

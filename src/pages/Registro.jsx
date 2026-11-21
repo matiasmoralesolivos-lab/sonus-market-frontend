@@ -1,36 +1,39 @@
 
-import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { GlobalContext } from '../context/GlobalContext';
-import Navbar from '../components/Navbar';
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext";
+import Navbar from "../components/Navbar";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Registro() {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  const { registrarUsuario } = useContext(GlobalContext);
+  const { registrarUsuario, iniciarSesionGoogle } =
+    useContext(GlobalContext);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError('');
+    setError("");
 
     if (password.length < 8 || password.length > 64) {
-      setError('La contraseña debe tener entre 8 y 64 caracteres.');
+      setError("La contraseña debe tener entre 8 y 64 caracteres.");
       return;
     }
 
     if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
-      setError('La contraseña debe contener al menos una letra y un número.');
+      setError("La contraseña debe contener al menos una letra y un número.");
       return;
     }
 
     if (/\s/.test(password)) {
-      setError('La contraseña no puede contener espacios.');
+      setError("La contraseña no puede contener espacios.");
       return;
     }
 
@@ -38,7 +41,21 @@ function Registro() {
 
     try {
       await registrarUsuario(nombre, email, password);
-      navigate('/login');
+      navigate("/login");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    setError("");
+    setCargando(true);
+
+    try {
+      await iniciarSesionGoogle(response.credential);
+      navigate("/perfil");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -54,9 +71,7 @@ function Registro() {
         <div className="row justify-content-center">
           <div className="col-12 col-sm-8 col-md-5 col-lg-4">
             <div className="border rounded-4 p-4">
-              <h1 className="h3 text-center mb-4">
-                Crear cuenta
-              </h1>
+              <h1 className="h3 text-center mb-4">Crear cuenta</h1>
 
               {error && (
                 <div className="alert alert-danger" role="alert">
@@ -66,9 +81,7 @@ function Registro() {
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label className="form-label">
-                    Nombre completo
-                  </label>
+                  <label className="form-label">Nombre completo</label>
 
                   <input
                     type="text"
@@ -81,9 +94,7 @@ function Registro() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">
-                    Correo electrónico
-                  </label>
+                  <label className="form-label">Correo electrónico</label>
 
                   <input
                     type="email"
@@ -96,9 +107,7 @@ function Registro() {
                 </div>
 
                 <div className="mb-3">
-                  <label className="form-label">
-                    Contraseña
-                  </label>
+                  <label className="form-label">Contraseña</label>
 
                   <input
                     type="password"
@@ -112,7 +121,8 @@ function Registro() {
                   />
 
                   <div className="form-text">
-                    Entre 8 y 64 caracteres, con al menos una letra y un número, sin espacios.
+                    Entre 8 y 64 caracteres, con al menos una letra y un número,
+                    sin espacios.
                   </div>
                 </div>
 
@@ -121,12 +131,28 @@ function Registro() {
                   className="btn btn-dark w-100"
                   disabled={cargando}
                 >
-                  {cargando ? 'Registrando...' : 'Registrarse'}
+                  {cargando ? "Registrando..." : "Registrarse"}
                 </button>
               </form>
 
+              <div className="text-center my-3">
+                <span className="text-muted small">O regístrate con</span>
+              </div>
+
+              <div className="d-flex justify-content-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() =>
+                    setError("No fue posible registrarse con Google")
+                  }
+                  text="signup_with"
+                  shape="rectangular"
+                  width="280"
+                />
+              </div>
+
               <p className="text-center small mt-4 mb-0">
-                ¿Ya tienes una cuenta?{' '}
+                ¿Ya tienes una cuenta?{" "}
                 <Link to="/login">Inicia sesión</Link>
               </p>
             </div>

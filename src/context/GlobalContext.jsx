@@ -9,6 +9,7 @@ import {
   obtenerPublicacionesAPI,
   crearPublicacionAPI,
   actualizarPublicacionAPI,
+    eliminarPublicacionAPI,
 } from '../services/api';
 
 export const GlobalContext = createContext();
@@ -159,6 +160,21 @@ export const GlobalProvider = ({ children }) => {
     return publicacionActualizada;
   };
 
+  // Eliminar publicación de PostgreSQL
+const eliminarPublicacion = async (id) => {
+  if (!token) {
+    throw new Error('Debes iniciar sesión para eliminar una publicación');
+  }
+
+  await eliminarPublicacionAPI(id, token);
+
+  setPublicaciones((prevPublicaciones) =>
+    prevPublicaciones.filter(
+      (publicacion) => Number(publicacion.id) !== Number(id)
+    )
+  );
+};
+
   return (
     <GlobalContext.Provider
       value={{
@@ -173,6 +189,7 @@ export const GlobalProvider = ({ children }) => {
         cargarPublicaciones,
         agregarPublicacion,
         editarPublicacion,
+        eliminarPublicacion,
         iniciarSesionGoogle,
       }}
     >

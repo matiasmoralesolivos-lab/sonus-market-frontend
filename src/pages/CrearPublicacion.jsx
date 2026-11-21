@@ -1,11 +1,7 @@
-
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
-import {
-  obtenerPublicacionAPI,
-  obtenerEtiquetasAPI,
-} from "../services/api";
+import { obtenerPublicacionAPI, obtenerEtiquetasAPI } from "../services/api";
 import { subirImagenImageKit } from "../services/imagenesService";
 import Navbar from "../components/Navbar";
 
@@ -82,9 +78,7 @@ function CrearPublicacion() {
         setStock(String(publicacion.stock));
         setImagenUrl(publicacion.imagen_url || "");
         setEtiquetasSeleccionadas(
-          (publicacion.etiquetas || []).map((etiqueta) =>
-            Number(etiqueta.id)
-          )
+          (publicacion.etiquetas || []).map((etiqueta) => Number(etiqueta.id)),
         );
       } catch (error) {
         setError(error.message);
@@ -102,11 +96,7 @@ function CrearPublicacion() {
 
     if (!archivo) return;
 
-    const formatosPermitidos = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-    ];
+    const formatosPermitidos = ["image/jpeg", "image/png", "image/webp"];
 
     if (!formatosPermitidos.includes(archivo.type)) {
       setError("Selecciona una imagen JPG, PNG o WebP.");
@@ -175,8 +165,8 @@ function CrearPublicacion() {
         <Navbar />
         <main className="container py-5">
           <h1 className="h4">
-            Debes iniciar sesión para{" "}
-            {modoEdicion ? "editar" : "crear"} una publicación.
+            Debes iniciar sesión para {modoEdicion ? "editar" : "crear"} una
+            publicación.
           </h1>
           <Link to="/login" className="btn btn-dark mt-3">
             Iniciar sesión
@@ -258,15 +248,13 @@ function CrearPublicacion() {
                         etiquetas.some(
                           (etiqueta) =>
                             etiqueta.id === id &&
-                            etiqueta.categoria === nuevaCategoria
-                        )
-                      )
+                            etiqueta.categoria === nuevaCategoria,
+                        ),
+                      ),
                     );
                   }}
                 >
-                  <option value="Audio profesional">
-                    Audio profesional
-                  </option>
+                  <option value="Audio profesional">Audio profesional</option>
                   <option value="Instrumentos">Instrumentos</option>
                   <option value="Accesorios">Accesorios</option>
                   <option value="Otros">Otros</option>
@@ -277,15 +265,11 @@ function CrearPublicacion() {
                 <label className="form-label">Etiquetas</label>
 
                 {cargandoEtiquetas ? (
-                  <p className="text-secondary small">
-                    Cargando etiquetas...
-                  </p>
+                  <p className="text-secondary small">Cargando etiquetas...</p>
                 ) : (
                   <div className="border rounded-3 p-3">
                     {etiquetas
-                      .filter(
-                        (etiqueta) => etiqueta.categoria === categoria
-                      )
+                      .filter((etiqueta) => etiqueta.categoria === categoria)
                       .map((etiqueta) => (
                         <div className="form-check" key={etiqueta.id}>
                           <input
@@ -293,7 +277,7 @@ function CrearPublicacion() {
                             type="checkbox"
                             id={`etiqueta-${etiqueta.id}`}
                             checked={etiquetasSeleccionadas.includes(
-                              etiqueta.id
+                              etiqueta.id,
                             )}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -304,8 +288,8 @@ function CrearPublicacion() {
                               } else {
                                 setEtiquetasSeleccionadas(
                                   etiquetasSeleccionadas.filter(
-                                    (id) => id !== etiqueta.id
-                                  )
+                                    (id) => id !== etiqueta.id,
+                                  ),
                                 );
                               }
                             }}
@@ -320,7 +304,7 @@ function CrearPublicacion() {
                       ))}
 
                     {!etiquetas.some(
-                      (etiqueta) => etiqueta.categoria === categoria
+                      (etiqueta) => etiqueta.categoria === categoria,
                     ) && (
                       <p className="text-secondary small mb-0">
                         No hay etiquetas disponibles para esta categoría.
@@ -347,28 +331,26 @@ function CrearPublicacion() {
               </div>
 
               <div className="mb-4">
-                <label className="form-label">
-                  Imagen del producto
-                </label>
+                <label className="form-label">URL de imagen (opcional)</label>
 
                 <input
-                  type="file"
+                  type="url"
                   className="form-control"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleSeleccionImagen}
-                  required={!modoEdicion && !imagenUrl}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  value={imagenUrl}
+                  onChange={(e) => {
+                    setImagenUrl(e.target.value);
+                    setArchivoImagen(null);
+                  }}
                 />
 
                 <small className="text-secondary">
-                  Formatos permitidos: JPG, PNG y WebP. Máximo 3 MB.
-                  {modoEdicion &&
-                    " Si no seleccionas otra imagen, se conservará la actual."}
+                  Puedes pegar una URL o seleccionar una imagen desde tu
+                  dispositivo. Si seleccionas una imagen, esta tendrá prioridad sobre la URL.
                 </small>
               </div>
 
-              {error && (
-                <div className="alert alert-danger">{error}</div>
-              )}
+              {error && <div className="alert alert-danger">{error}</div>}
 
               <button
                 type="submit"
@@ -384,29 +366,54 @@ function CrearPublicacion() {
             </form>
           </div>
 
-          <div className="col-12 col-md-6">
-            <h2 className="h5 mb-3">Vista previa de imagen</h2>
+          
+<div className="col-12 col-md-6">
+  <h2 className="h5 mb-3">Imagen del producto</h2>
 
-            <div
-              className="bg-light border rounded-4 d-flex align-items-center justify-content-center"
-              style={{ minHeight: "350px" }}
-            >
-              {vistaPrevia || imagenUrl ? (
-                <img
-                  src={vistaPrevia || imagenUrl}
-                  alt="Vista previa del producto"
-                  className="img-fluid rounded-4"
-                  style={{
-                    maxHeight: "350px",
-                    maxWidth: "100%",
-                    objectFit: "contain",
-                  }}
-                />
-              ) : (
-                <span className="text-secondary">IMAGEN</span>
-              )}
-            </div>
-          </div>
+  <label
+    htmlFor="archivo-imagen"
+    className="w-100 bg-light border rounded-4 d-flex flex-column align-items-center justify-content-center p-3"
+    style={{ minHeight: "350px", cursor: "pointer" }}
+  >
+    <input
+      id="archivo-imagen"
+      type="file"
+      className="visually-hidden"
+      accept="image/jpeg,image/png,image/webp"
+      onChange={handleSeleccionImagen}
+    />
+
+    {vistaPrevia || imagenUrl ? (
+      <img
+        src={vistaPrevia || imagenUrl}
+        alt="Vista previa del producto"
+        className="img-fluid rounded-4"
+        style={{
+          maxHeight: "300px",
+          maxWidth: "100%",
+          objectFit: "contain",
+        }}
+      />
+    ) : (
+      <>
+        <span className="fs-1">＋</span>
+        <strong>Seleccionar imagen</strong>
+        <span className="text-secondary small">
+          Haz clic aquí para buscar una imagen
+        </span>
+      </>
+    )}
+
+    <span className="text-secondary small mt-3">
+      Haz clic para seleccionar o cambiar la imagen
+    </span>
+  </label>
+
+  <small className="text-secondary d-block mt-2">
+    JPG, PNG o WebP. Máximo 3 MB.
+  </small>
+</div>
+
         </div>
       </main>
     </>
