@@ -2,19 +2,26 @@
 :root {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 
-  --color-primary: #17191d;
-  --color-accent: #ff7936;
-  --color-accent-hover: #e96324;
-  --color-accent-light: #fff0e8;
+  /* Identidad SonusMarket */
+  --color-primary: #edf3ff;
+  --color-accent: #35d6c5;
+  --color-accent-hover: #65e8dc;
+  --color-accent-light: rgba(53, 214, 197, 0.12);
 
-  --color-background: #f4f3f1;
-  --color-surface: #ffffff;
-  --color-text: #24262b;
-  --color-muted: #777b84;
-  --color-border: #e4e2df;
+  --color-background: #080d18;
+  --color-surface: #111c2e;
+  --color-surface-light: #17243a;
+  --color-text: #edf3ff;
+  --color-muted: #91a0b8;
+  --color-border: rgba(155, 180, 220, 0.13);
 
-  --color-dark: #17191d;
-  --color-dark-soft: #22252b;
+  --color-dark: #111c2e;
+  --color-dark-soft: #17243a;
+  --color-violet: #9275ff;
+
+  --shadow-card:
+    0 12px 35px rgba(0, 0, 0, 0.28),
+    0 0 25px rgba(53, 214, 197, 0.035);
 
   color: var(--color-text);
   background: var(--color-background);
@@ -24,104 +31,227 @@
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+  background: var(--color-background);
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--color-background);
+  background:
+    radial-gradient(
+      ellipse at 15% 5%,
+      rgba(53, 214, 197, 0.09),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 90% 35%,
+      rgba(146, 117, 255, 0.09),
+      transparent 32%
+    ),
+    var(--color-background);
   color: var(--color-text);
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-size: 14px;
 }
 
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 a {
-  color: var(--color-accent-hover);
+  color: var(--color-accent);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
 }
 
-h1, h2, h3, h4, h5 {
-  color: var(--color-primary);
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
   letter-spacing: -0.5px;
   font-weight: 700;
 }
 
-.btn-dark {
-  background-color: var(--color-dark);
-  border-color: var(--color-dark);
-  color: #ffffff;
+p {
+  color: var(--color-text);
+}
+
+/* Botones */
+
+.btn {
+  border-radius: 9px;
   font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.btn-dark:hover {
-  background-color: var(--color-accent);
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-dark,
+.btn-primary,
+.sonus-btn-primary {
+  background: linear-gradient(135deg, #35d6c5, #24a99f);
+  border: 1px solid #35d6c5;
+  color: #07151b;
+  box-shadow: 0 4px 18px rgba(53, 214, 197, 0.17);
+}
+
+.btn-dark:hover,
+.btn-primary:hover,
+.sonus-btn-primary:hover {
+  background: linear-gradient(135deg, #65e8dc, #35d6c5);
+  border-color: #65e8dc;
+  color: #07151b;
+  box-shadow: 0 7px 25px rgba(53, 214, 197, 0.3);
+}
+
+.btn-outline-dark,
+.btn-outline-secondary,
+.sonus-btn-outline {
+  background: rgba(255, 255, 255, 0.025);
+  color: #dce7f8;
+  border: 1px solid rgba(155, 180, 220, 0.28);
+}
+
+.btn-outline-dark:hover,
+.btn-outline-secondary:hover,
+.sonus-btn-outline:hover {
+  background: rgba(53, 214, 197, 0.1);
   border-color: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-accent);
+  box-shadow: 0 4px 18px rgba(53, 214, 197, 0.1);
 }
 
-.btn-outline-dark {
-  color: var(--color-dark);
-  border-color: #aeb0b4;
+.btn-danger,
+.btn-outline-danger {
+  border-radius: 9px;
 }
 
-.btn-outline-dark:hover {
-  background-color: var(--color-dark);
-  border-color: var(--color-dark);
-  color: #ffffff;
+/* Tarjetas flotantes */
+
+.card {
+  color: var(--color-text);
+  background: linear-gradient(
+    145deg,
+    rgba(23, 36, 58, 0.97),
+    rgba(13, 24, 42, 0.98)
+  );
+  border: 1px solid var(--color-border) !important;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
-.btn-primary {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
+.card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(53, 214, 197, 0.32) !important;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.38),
+    0 0 25px rgba(53, 214, 197, 0.08);
 }
 
-.btn-primary:hover {
-  background-color: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
+.card-body {
+  color: var(--color-text);
 }
+
+.card-title {
+  color: var(--color-text);
+}
+
+/* Formularios */
 
 .form-control,
 .form-select {
-  border-color: var(--color-border);
-  border-radius: 9px;
+  color: var(--color-text);
+  background-color: #101b2d;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
   padding: 11px 13px;
+}
+
+.form-control::placeholder {
+  color: #71819b;
 }
 
 .form-control:focus,
 .form-select:focus {
+  color: var(--color-text);
+  background-color: #142239;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(255, 121, 54, 0.13);
+  box-shadow: 0 0 0 3px rgba(53, 214, 197, 0.13);
 }
 
-.card {
-  border-color: var(--color-border) !important;
-  background-color: var(--color-surface);
-  box-shadow: 0 4px 16px rgba(23, 25, 29, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.form-select option {
+  color: var(--color-text);
+  background: #111c2e;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(23, 25, 29, 0.10);
+.form-label,
+label {
+  color: #cbd7e9;
+}
+
+/* Elementos de Bootstrap */
+
+.bg-light {
+  background-color: var(--color-surface-light) !important;
+}
+
+.bg-white {
+  background-color: var(--color-surface) !important;
+}
+
+.text-dark {
+  color: var(--color-text) !important;
 }
 
 .text-secondary {
   color: var(--color-muted) !important;
 }
 
-/* Identidad visual SonusMarket - Dark Studio */
+.border {
+  border-color: var(--color-border) !important;
+}
+
+.border-bottom,
+.border-top {
+  border-color: var(--color-border) !important;
+}
+
+.alert {
+  border-radius: 12px;
+}
+
+/* Navbar */
 
 .sonus-navbar {
-  background: var(--color-dark);
+  position: relative;
+  z-index: 10;
+  background: rgba(8, 13, 24, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(155, 180, 220, 0.1);
   padding: 16px 0;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .sonus-brand {
-  color: #ffffff !important;
+  color: #edf3ff !important;
   font-size: 21px;
   font-weight: 800;
   letter-spacing: -0.7px;
@@ -131,16 +261,17 @@ h1, h2, h3, h4, h5 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   margin-right: 9px;
-  border-radius: 9px;
-  background: var(--color-accent);
-  color: #17191d;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #35d6c5, #9275ff);
+  color: #08111e;
+  box-shadow: 0 0 20px rgba(53, 214, 197, 0.25);
 }
 
 .sonus-nav-link {
-  color: #c9cbd0 !important;
+  color: #aab9d0 !important;
   font-size: 13px;
   font-weight: 500;
   transition: color 0.2s ease;
@@ -150,48 +281,36 @@ h1, h2, h3, h4, h5 {
   color: var(--color-accent) !important;
 }
 
-.sonus-btn-primary {
-  background: var(--color-accent);
-  color: #17191d;
-  border: 1px solid var(--color-accent);
-  padding: 8px 17px;
-  font-weight: 700;
-  border-radius: 7px;
+.sonus-user-name {
+  color: #b9c7dc;
+  font-size: 13px;
+  padding: 7px 0;
 }
 
-.sonus-btn-primary:hover {
-  background: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
-  color: #ffffff;
+.sonus-btn-primary {
+  padding: 8px 17px;
+  font-weight: 700;
+  border-radius: 9px;
 }
 
 .sonus-btn-outline {
-  color: #ffffff;
-  border: 1px solid #666970;
-  border-radius: 7px;
+  border-radius: 9px;
 }
 
-.sonus-btn-outline:hover {
-  background: #ffffff;
-  color: var(--color-dark);
-}
-
-/* Menú hamburguesa */
+/* Menú móvil */
 
 .sonus-navbar .navbar-toggler {
-  border: 1px solid #666970;
+  border: 1px solid rgba(155, 180, 220, 0.3);
   padding: 6px 10px;
 }
 
 .sonus-navbar .navbar-toggler:focus {
-  box-shadow: none;
+  box-shadow: 0 0 0 3px rgba(53, 214, 197, 0.15);
 }
 
 .sonus-navbar .navbar-toggler-icon {
   filter: invert(1);
 }
-
-/* Menú desplegado en móviles */
 
 @media (max-width: 991.98px) {
   .sonus-navbar .navbar-collapse.show {
@@ -217,27 +336,80 @@ h1, h2, h3, h4, h5 {
   }
 }
 
+/* Selección de texto */
 
-
-.sonus-user-name {
-  color: #b9bdc5;
-  font-size: 13px;
-  padding: 7px 0;
+::selection {
+  color: #07151b;
+  background: var(--color-accent);
 }
 
-.sonus-nav-link {
-  transition: color 0.2s ease;
+/* Accesibilidad: reducir animaciones */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
-.sonus-nav-link:hover {
-  color: var(--color-accent) !important;
+
+/* Tarjetas de productos */
+
+.product-card {
+  overflow: hidden;
 }
 
-.sonus-btn-primary {
-  font-weight: 600;
-  border-radius: 7px;
+.product-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 190px;
+  margin: 9px 9px 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(
+      circle,
+      rgba(53, 214, 197, 0.07),
+      transparent 70%
+    ),
+    #0b1525;
 }
 
-.sonus-btn-outline {
-  border-radius: 7px;
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+  transition: transform 0.35s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.06);
+}
+
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px !important;
+}
+
+.product-title {
+  min-height: 38px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.product-price {
+  color: var(--color-accent);
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.product-card-body .btn {
+  margin-top: auto;
 }

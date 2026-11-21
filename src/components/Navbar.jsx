@@ -3,6 +3,40 @@ import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GlobalContext } from '../context/GlobalContext'
 
+function LogoSonus() {
+  return (
+    <span className="brand-icon">
+      <svg
+        viewBox="0 0 40 40"
+        width="27"
+        height="27"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <ellipse
+          cx="20"
+          cy="20"
+          rx="16"
+          ry="8"
+          transform="rotate(-35 20 20)"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          opacity=".7"
+        />
+        <path
+          d="M8 21h4l3-7 5 13 4-10 3 4h5"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+      </svg>
+    </span>
+  )
+}
+
 function Navbar() {
   const { usuario, cerrarSesion } = useContext(GlobalContext)
   const [menuAbierto, setMenuAbierto] = useState(false)
@@ -21,13 +55,12 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg sonus-navbar">
       <div className="container">
-
         <Link
           className="navbar-brand sonus-brand"
           to="/"
           onClick={cerrarMenu}
         >
-          <span className="brand-icon">S</span>
+          <LogoSonus />
           SonusMarket
         </Link>
 
@@ -43,30 +76,17 @@ function Navbar() {
 
         <div className={`collapse navbar-collapse ${menuAbierto ? 'show' : ''}`}>
           <div className="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-
-            <Link
-              className="nav-link sonus-nav-link"
-              to="/"
-              onClick={cerrarMenu}
-            >
+            <Link className="nav-link sonus-nav-link" to="/" onClick={cerrarMenu}>
               Inicio
             </Link>
 
-            <Link
-              className="nav-link sonus-nav-link"
-              to="/publicaciones"
-              onClick={cerrarMenu}
-            >
+            <Link className="nav-link sonus-nav-link" to="/publicaciones" onClick={cerrarMenu}>
               Explorar
             </Link>
 
             {usuario ? (
               <>
-                <Link
-                  className="nav-link sonus-nav-link"
-                  to="/perfil"
-                  onClick={cerrarMenu}
-                >
+                <Link className="nav-link sonus-nav-link" to="/perfil" onClick={cerrarMenu}>
                   Mi perfil
                 </Link>
 
@@ -83,11 +103,7 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  className="nav-link sonus-nav-link"
-                  to="/login"
-                  onClick={cerrarMenu}
-                >
+                <Link className="nav-link sonus-nav-link" to="/login" onClick={cerrarMenu}>
                   Iniciar sesión
                 </Link>
 
@@ -100,7 +116,6 @@ function Navbar() {
                 </Link>
               </>
             )}
-
           </div>
         </div>
       </div>

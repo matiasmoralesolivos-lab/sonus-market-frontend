@@ -3,29 +3,28 @@ import { Link } from 'react-router-dom'
 
 function ProductCard({ producto }) {
   return (
-    <div className="card h-100 border rounded-4 p-1">
-      <div
-        className="bg-light border rounded-3 d-flex align-items-center justify-content-center overflow-hidden"
-        style={{ height: '160px' }}
+    <div className="card product-card h-100">
+      <Link
+        to={`/publicaciones/${producto.id}`}
+        className="product-image-container"
       >
         {producto.imagen_url ? (
           <img
             src={producto.imagen_url}
             alt={producto.nombre}
-            className="w-100 h-100"
-            style={{ objectFit: 'contain' }}
+            className="product-image"
           />
         ) : (
-          <span className="text-secondary small">IMAGEN</span>
+          <span className="text-secondary small">IMAGEN NO DISPONIBLE</span>
         )}
-      </div>
+      </Link>
 
-      <div className="card-body p-2">
-        <h5 className="card-title fs-6 mb-1">
+      <div className="card-body product-card-body">
+        <h5 className="card-title product-title">
           {producto.nombre}
         </h5>
 
-        <p className="small text-secondary mb-1">
+        <p className="product-price">
           ${Number(producto.precio).toLocaleString('es-CL')}
         </p>
 

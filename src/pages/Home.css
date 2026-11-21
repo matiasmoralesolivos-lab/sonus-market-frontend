@@ -1,59 +1,137 @@
 
 .home-container {
-  padding-top: 35px;
-  padding-bottom: 50px;
+  position: relative;
+  padding-top: 55px;
+  padding-bottom: 65px;
 }
 
+/* Presentación principal */
+
 .home-hero {
-  margin-bottom: 38px;
+  position: relative;
+  padding: 45px 35px;
+  margin-bottom: 55px;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(146, 117, 255, 0.16),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(53, 214, 197, 0.12),
+      transparent 40%
+    ),
+    linear-gradient(135deg, #111e33, #0c1526);
+  border: 1px solid rgba(155, 180, 220, 0.15);
+  border-radius: 22px;
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.3),
+    0 0 35px rgba(53, 214, 197, 0.045);
 }
 
 .home-hero h1 {
-  font-size: 28px;
-  font-weight: 500;
-  margin-bottom: 8px;
+  color: #edf3ff;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 14px;
 }
 
 .home-hero p {
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 18px;
+  color: #aab9d0;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 22px;
 }
 
+/* Categorías */
+
 .home-categories {
-  margin-bottom: 35px;
+  margin-bottom: 55px;
 }
 
 .home-categories h2,
 .home-products h2 {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 15px;
+  color: #edf3ff;
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 22px;
+  letter-spacing: -0.5px;
 }
 
 .category-card {
+  position: relative;
   display: block;
-  min-height: 75px;
-  padding: 15px;
-  color: #222;
+  min-height: 105px;
+  padding: 22px;
+  overflow: hidden;
+  color: #edf3ff;
   text-decoration: none;
-  background: #f7f7f7;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  transition: background 0.2s;
+  background: linear-gradient(145deg, #172943, #101b2e);
+  border: 1px solid rgba(155, 180, 220, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .category-card:hover {
-  background: #eee;
+  color: #edf3ff;
+  background: linear-gradient(145deg, #1b334e, #13243a);
+  border-color: rgba(53, 214, 197, 0.4);
+  transform: translateY(-5px);
+  box-shadow:
+    0 16px 35px rgba(0, 0, 0, 0.3),
+    0 0 22px rgba(53, 214, 197, 0.07);
 }
 
 .category-card h3 {
-  font-size: 14px;
-  margin-bottom: 5px;
+  color: #edf3ff;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .category-card p {
-  color: #777;
-  font-size: 11px;
+  color: #91a0b8;
+  font-size: 12px;
+  line-height: 1.5;
   margin: 0;
+}
+
+/* Productos destacados */
+
+.home-products {
+  margin-bottom: 25px;
+}
+
+.home-products .card {
+  height: 100%;
+}
+
+/* Adaptación móvil */
+
+@media (max-width: 767px) {
+  .home-container {
+    padding-top: 30px;
+    padding-bottom: 40px;
+  }
+
+  .home-hero {
+    padding: 30px 22px;
+    margin-bottom: 40px;
+    border-radius: 17px;
+  }
+
+  .home-hero h1 {
+    font-size: 29px;
+  }
+
+  .home-categories {
+    margin-bottom: 40px;
+  }
 }
